@@ -1,0 +1,44 @@
+{
+  "site_name": "FF LIKE",
+  "tagline": "Free Fire likes delivered automatically",
+  "currency": "USD",
+  "port": 8080,
+  "admin_user": "udp",
+  "auto_approve_orders": false,
+  "auto_approve_deposits": false,
+  "binance": {
+    "pay_id": "000000000",
+    "note": "Open Binance, choose Pay, send USDT to the Pay ID above, then paste the Transaction ID in your wallet. Credit lands on your balance and pays your orders."
+  },
+  "autolike_plans": [
+    {
+      "days": 30,
+      "price": 1.5
+    },
+    {
+      "days": 60,
+      "price": 3.0
+    },
+    {
+      "days": 120,
+      "price": 5.0
+    }
+  ],
+  "credit_rate_days_per_dollar": 10,
+  "credit_amounts": [
+    1,
+    2,
+    3,
+    5,
+    10
+  ],
+  "likes_per_day": 135,
+  "info_api_base": "https://likes.freefire.site",
+  "like_api": {
+    "base": "https://like-api.up.railway.app",
+    "key": "",
+    "key_header": "X-API-Key"
+  },
+  "admin_password_hash": "0007f6620794629d05891520d0c9236d$1469ca4a1f065f9076a80a749ffeb629ea7d08f16a7c37fe74473749b076b573",
+  "info_api_cookie": ""
+}

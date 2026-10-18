@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FF LIKE - Admin</title>
+  <link rel="icon" type="image/png" href="/static/img/logo.png">
+  <link rel="stylesheet" href="/static/css/style.css">
+  <script>
+    (function () {
+      try {
+        var theme = localStorage.getItem("fflike-theme");
+        if (theme !== "dark" && theme !== "light") { theme = "dark"; }
+        document.documentElement.setAttribute("data-theme", theme);
+      } catch (e) {}
+    })();
+  </script>
+</head>
+<body>
+
+  <header class="topbar admin">
+    <div class="container topbar-in">
+      <a class="brand" href="/admin">
+        <img src="/static/img/logo.png" alt="FF LIKE logo">
+        <span>FF&nbsp;<b>LIKE</b></span>
+      </a>
+      <span class="brand-tag">ADMIN DASHBOARD</span>
+      <div class="top-actions">
+        <a class="btn btn-sm ghost" href="/">Site</a>
+        <button class="theme-toggle" id="theme-toggle" title="Switch dark / light" type="button">
+          <span class="icon i-sun theme-icon-sun" aria-hidden="true"></span>
+          <span class="icon i-moon theme-icon-moon" aria-hidden="true"></span>
+        </button>
+        <button class="btn btn-sm danger" id="btn-logout" type="button">
+          <span class="icon i-power" aria-hidden="true"></span>Logout
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+
+    <!-- ==================== LOGIN ==================== -->
+    <section class="login-wrap" id="login-view">
+      <div class="card login-card">
+        <span class="eyebrow"><span class="icon i-lock" aria-hidden="true"></span>Restricted area</span>
+        <h1>Admin login</h1>
+        <p class="muted" style="margin-top:6px;">Only the owner account can open this dashboard.</p>
+        <div class="result" id="login-err"></div>
+        <div class="field">
+          <label for="login-user">Username</label>
+          <input type="text" id="login-user" autocomplete="username" placeholder="Username">
+        </div>
+        <div class="field">
+          <label for="login-pass">Password</label>
+          <input type="password" id="login-pass" autocomplete="current-password" placeholder="Password">
+        </div>
+        <button class="btn primary w-100" id="btn-login" type="button">
+          <span class="icon i-lock" aria-hidden="true"></span>Login
+        </button>
+      </div>
+    </section>
+
+    <!-- ==================== DASHBOARD ==================== -->
+    <section class="section hidden" id="dash-view" style="padding-top:34px;">
+      <div class="container">
+
+        <div class="stat-grid">
+          <div class="stat">
+            <span class="top"><span class="icon i-user" aria-hidden="true"></span>Active accounts</span>
+            <div class="value num" id="st-active">-</div>
+            <div class="sub">currently running</div>
+          </div>
+          <div class="stat">
+            <span class="top"><span class="icon i-clock" aria-hidden="true"></span>Pending orders</span>
+            <div class="value num" id="st-pending">-</div>
+            <div class="sub">waiting for approval</div>
+          </div>
+          <div class="stat">
+            <span class="top"><span class="icon i-shield" aria-hidden="true"></span>Users</span>
+            <div class="value num" id="st-users">-</div>
+            <div class="sub">registered accounts</div>
+          </div>
+          <div class="stat">
+            <span class="top"><span class="icon i-coin" aria-hidden="true"></span>Wallet total</span>
+            <div class="value num" id="st-wallet">-</div>
+            <div class="sub">credit held by users</div>
+          </div>
+          <div class="stat">
+            <span class="top"><span class="icon i-card" aria-hidden="true"></span>Pending deposits</span>
+            <div class="value num" id="st-dep">-</div>
+            <div class="sub">transfers to check</div>
+          </div>
+          <div class="stat">
+            <span class="top"><span class="icon i-flame acc" aria-hidden="true"></span>Likes planned</span>
+            <div class="value num" id="st-likes">-</div>
+            <div class="sub">estimated total</div>
+          </div>
+        </div>
+
+        <div class="admin-grid">
+
+          <div class="admin-side">
+
+            <div class="panel">
+              <div class="panel-head">
+                <h3><span class="icon i-plus" aria-hidden="true"></span>Send likes now</h3>
+              </div>
+              <div class="field">
+                <label for="qa-like-uid">UID</label>
+                <input type="text" id="qa-like-uid" class="num" inputmode="numeric" placeholder="Free Fire UID">
+              </div>
+              <button class="btn primary w-100" id="qa-like-btn" type="button">
+                <span class="icon i-bolt acc" aria-hidden="true"></span>Send likes
+              </button>
+              <div class="result" id="qa-like-out"></div>
+            </div>
+
+            <div class="panel">
+              <div class="panel-head">
+                <h3><span class="icon i-bolt" aria-hidden="true"></span>Add Auto Like</h3>
+              </div>
+              <div class="field">
+                <label for="qa-auto-uid">UID</label>
+                <input type="text" id="qa-auto-uid" class="num" inputmode="numeric" placeholder="Free Fire UID">
+              </div>
+              <div class="field">
+                <label for="qa-auto-days">Days</label>
+                <input type="number" id="qa-auto-days" class="num" min="1" max="365" placeholder="30, 60, 120 or custom">
+              </div>
+              <button class="btn primary w-100" id="qa-auto-btn" type="button">
+                <span class="icon i-star acc" aria-hidden="true"></span>Start Auto Like
+              </button>
+              <p class="dim" style="font-size:0.85rem; margin-top:10px;">
+                Uses the like engine directly. The account is logged here and visible to the customer side.
+              </p>
+            </div>
+
+            <div class="panel">
+              <div class="panel-head">
+                <h3><span class="icon i-gear" aria-hidden="true"></span>Settings</h3>
+              </div>
+              <div class="field">
+                <label for="set-site-name">Site name</label>
+                <input type="text" id="set-site-name" maxlength="40">
+              </div>
+              <div class="field">
+                <label for="set-tagline">Tagline</label>
+                <input type="text" id="set-tagline" maxlength="140">
+              </div>
+              <div class="field">
+                <label for="set-pay-id">Binance Pay ID</label>
+                <input type="text" id="set-pay-id" maxlength="48" class="num">
+              </div>
+              <div class="field">
+                <label for="set-pay-note">Binance note</label>
+                <textarea id="set-pay-note" maxlength="400"></textarea>
+              </div>
+              <div class="switch-line">
+                <span class="lbl">Auto activation of orders
+                  <span class="sub">Paid orders activate right away on the like engine.</span>
+                </span>
+                <label class="toggle">
+                  <input type="checkbox" id="set-auto-orders">
+                  <span class="track"></span>
+                </label>
+              </div>
+              <div class="switch-line">
+                <span class="lbl">Auto approval of deposits
+                  <span class="sub">Wallet credit lands instantly, checked after.</span>
+                </span>
+                <label class="toggle">
+                  <input type="checkbox" id="set-auto-dep">
+                  <span class="track"></span>
+                </label>
+              </div>
+              <div class="field" style="margin-top:14px;">
+                <label for="set-card-cookie">Profile card cookie (likes.freefire.site)</label>
+                <textarea id="set-card-cookie" maxlength="2000" placeholder="Paste the Cookie header from the browser while logged in on likes.freefire.site. Real player cards come from the API through a hidden proxy."></textarea>
+              </div>
+              <div class="field">
+                <label for="set-admin-pass">New admin password (optional)</label>
+                <input type="password" id="set-admin-pass" autocomplete="new-password" placeholder="Min 6 characters, empty = no change">
+              </div>
+              <button class="btn primary w-100" id="btn-save-settings" type="button">
+                <span class="icon i-check acc" aria-hidden="true"></span>Save settings
+              </button>
+            </div>
+
+          </div>
+
+          <div class="admin-main">
+
+            <div class="panel">
+              <div class="panel-head">
+                <h3><span class="icon i-list" aria-hidden="true"></span>Orders (paid from wallet)</h3>
+                <div class="actions">
+                  <button class="btn btn-sm ghost" id="btn-reload-orders" type="button">
+                    <span class="icon i-refresh" aria-hidden="true"></span>Reload
+                  </button>
+                </div>
+              </div>
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Order</th><th>Date</th><th>User</th><th>Product</th><th>UID</th><th>Player</th>
+                      <th>Days</th><th>Price</th><th>Promo</th><th>Status</th><th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody id="orders-tbody">
+                    <tr class="empty-row"><td colspan="11">Loading...</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="panel">
+              <div class="panel-head">
+                <h3><span class="icon i-chart" aria-hidden="true"></span>Autolike manager (site + engine)</h3>
+                <div class="actions">
+                  <button class="btn btn-sm ghost" id="btn-reload-manager" type="button">
+                    <span class="icon i-refresh" aria-hidden="true"></span>Reload
+                  </button>
+                </div>
+              </div>
+              <p class="dim" style="margin:0 0 12px;">
+                Every autolike managed by the site: the local record merged with the live job
+                from the like engine. Engine-only rows were added outside this site.
+              </p>
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>UID</th><th>Player</th><th>Source</th><th>Product</th><th>Bought</th>
+                      <th>Engine left</th><th>Runs done</th><th>Likes/day</th><th>Ends</th><th>Status</th><th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody id="manager-tbody">
+                    <tr class="empty-row"><td colspan="11">Loading...</td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <p class="dim" id="manager-note" style="margin:12px 0 0;"></p>
+            </div>
+
+            <div class="panel">
+              <div class="panel-head">
+                <h3><span class="icon i-user" aria-hidden="true"></span>All accounts on the site</h3>
+                <div class="actions">
+                  <button class="btn btn-sm ghost" id="btn-reload-accounts" type="button">
+                    <span class="icon i-refresh" aria-hidden="true"></span>Reload
+                  </button>
+                </div>
+              </div>
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>ID</th><th>Added</th><th>UID</th><th>Player</th><th>Region</th><th>User</th>
+                      <th>Product</th><th>Days</th><th>Likes/day</th><th>Ends</th><th>Status</th><th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody id="accounts-tbody">
+                    <tr class="empty-row"><td colspan="12">Loading...</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="panel">
+              <div class="panel-head">
+                <h3><span class="icon i-shield" aria-hidden="true"></span>Users and wallets</h3>
+                <div class="actions">
+                  <button class="btn btn-sm ghost" id="btn-reload-users" type="button">
+                    <span class="icon i-refresh" aria-hidden="true"></span>Reload
+                  </button>
+                </div>
+              </div>
+              <div class="input-group" style="margin-bottom:14px;">
+                <select id="credit-user" style="max-width:260px;"></select>
+                <input type="number" id="credit-amount" class="num" step="0.5" placeholder="+10 credit or -5 debit">
+                <button class="btn primary" id="btn-credit" type="button">
+                  <span class="icon i-plus" aria-hidden="true"></span>Apply
+                </button>
+              </div>
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>User</th><th>Username</th><th>Balance</th><th>Orders</th><th>Registered</th><th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody id="users-tbody">
+                    <tr class="empty-row"><td colspan="6">Loading...</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="panel">
+              <div class="panel-head">
+                <h3><span class="icon i-card" aria-hidden="true"></span>Deposits (Binance Pay)</h3>
+                <div class="actions">
+                  <button class="btn btn-sm ghost" id="btn-reload-deposits" type="button">
+                    <span class="icon i-refresh" aria-hidden="true"></span>Reload
+                  </button>
+                </div>
+              </div>
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Deposit</th><th>Date</th><th>User</th><th>Amount</th><th>Transaction ID</th><th>Status</th><th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody id="deposits-tbody">
+                    <tr class="empty-row"><td colspan="7">Loading...</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="panel">
+              <div class="panel-head">
+                <h3><span class="icon i-tag" aria-hidden="true"></span>Coupons and promo codes</h3>
+              </div>
+              <div class="marketing-grid">
+                <div>
+                  <h4 class="mini-title"><span class="icon i-coin" aria-hidden="true"></span>Coupons - free wallet credit</h4>
+                  <div class="input-group" style="margin-bottom:10px;">
+                    <input type="text" id="cpn-code" maxlength="24" placeholder="CODE, e.g. FREE-10">
+                    <input type="number" id="cpn-amount" class="num" step="0.5" min="0.5" placeholder="USD credit, e.g. 5">
+                    <input type="number" id="cpn-uses" class="num" min="0" placeholder="Max uses (0 = infinite)">
+                    <button class="btn primary" id="btn-coupon-create" type="button">
+                      <span class="icon i-plus" aria-hidden="true"></span>Create
+                    </button>
+                  </div>
+                  <div class="table-wrap">
+                    <table>
+                      <thead>
+                        <tr><th>Code</th><th>Credit</th><th>Uses</th><th>Created</th><th>Actions</th></tr>
+                      </thead>
+                      <tbody id="coupons-tbody">
+                        <tr class="empty-row"><td colspan="5">Loading...</td></tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+                <div>
+                  <h4 class="mini-title"><span class="icon i-tag" aria-hidden="true"></span>Promo codes - price discount</h4>
+                  <div class="input-group" style="margin-bottom:10px;">
+                    <input type="text" id="pr-code" maxlength="24" placeholder="CODE, e.g. WELCOME20">
+                    <input type="number" id="pr-percent" class="num" min="1" max="100" placeholder="Discount %, e.g. 20">
+                    <input type="number" id="pr-uses" class="num" min="0" placeholder="Max uses (0 = infinite)">
+                    <button class="btn primary" id="btn-promo-create" type="button">
+                      <span class="icon i-plus" aria-hidden="true"></span>Create
+                    </button>
+                  </div>
+                  <div class="table-wrap">
+                    <table>
+                      <thead>
+                        <tr><th>Code</th><th>Discount</th><th>Uses</th><th>Created</th><th>Actions</th></tr>
+                      </thead>
+                      <tbody id="promos-tbody">
+                        <tr class="empty-row"><td colspan="5">Loading...</td></tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="panel">
+              <div class="panel-head">
+                <h3><span class="icon i-shield" aria-hidden="true"></span>Like engine status</h3>
+              </div>
+              <div id="ov-upstream">Loading...</div>
+            </div>
+
+            <div class="panel">
+              <div class="panel-head">
+                <h3><span class="icon i-chart" aria-hidden="true"></span>Upstream viewer</h3>
+                <div class="actions">
+                  <button class="btn btn-sm ghost" id="btn-upstream-refresh" type="button">
+                    <span class="icon i-refresh" aria-hidden="true"></span>Refresh tokens
+                  </button>
+                </div>
+              </div>
+              <div class="tabs" id="upstream-tabs">
+                <button type="button" data-view="status"><span class="icon i-chart" aria-hidden="true"></span>Status</button>
+                <button type="button" data-view="accounts"><span class="icon i-user" aria-hidden="true"></span>Accounts</button>
+                <button type="button" data-view="targets"><span class="icon i-bolt" aria-hidden="true"></span>Targets</button>
+                <button type="button" data-view="viplog"><span class="icon i-star" aria-hidden="true"></span>VIP log</button>
+              </div>
+              <div class="input-group" style="margin-bottom:14px;">
+                <input type="text" id="up-uid" class="num" inputmode="numeric" placeholder="UID for VIP log (optional, empty = all)">
+                <button class="btn ghost" id="btn-viplog-find" type="button">
+                  <span class="icon i-list" aria-hidden="true"></span>View
+                </button>
+                <button class="btn ghost" id="btn-viplog-delete" type="button">
+                  <span class="icon i-trash" aria-hidden="true"></span>Delete log
+                </button>
+              </div>
+              <pre class="upstream" id="upstream-box">Pick a tab above to inspect the like engine.</pre>
+            </div>
+
+            <div class="panel">
+              <div class="panel-head">
+                <h3><span class="icon i-cal" aria-hidden="true"></span>Recent events</h3>
+              </div>
+              <div id="ov-events">Loading...</div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <div id="toast-holder"></div>
+  <script src="/static/js/admin.js"></script>
+</body>
+</html>

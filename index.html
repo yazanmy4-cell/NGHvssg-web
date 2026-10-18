@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FF LIKE - Free Fire Likes</title>
+  <meta name="description" content="Free Fire likes delivered automatically. Log in, add wallet credit with Binance Pay, then buy Auto Like plans or Like Credit.">
+  <link rel="icon" type="image/png" href="/static/img/logo.png">
+  <link rel="stylesheet" href="/static/css/style.css">
+  <script>
+    (function () {
+      try {
+        var theme = localStorage.getItem("fflike-theme");
+        if (theme !== "dark" && theme !== "light") { theme = "dark"; }
+        document.documentElement.setAttribute("data-theme", theme);
+      } catch (e) {}
+    })();
+  </script>
+</head>
+<body>
+
+  <header class="topbar">
+    <div class="container topbar-in">
+      <a class="brand" href="/">
+        <img src="/static/img/logo.png" alt="FF LIKE logo">
+        <span>FF&nbsp;<b>LIKE</b></span>
+      </a>
+      <nav class="nav" id="main-nav" hidden>
+        <a href="#wallet">Wallet</a>
+        <a href="#offers">Offers</a>
+        <a href="#order">Order</a>
+        <a href="#activity">My orders</a>
+        <a href="#logs">Logs</a>
+      </nav>
+      <div class="top-actions">
+        <span class="api-badge"><span class="dot" id="api-dot"></span><span class="lbl" id="api-lbl">Checking</span></span>
+        <span class="user-chip" id="user-chip" hidden>
+          <span class="icon i-user" aria-hidden="true"></span>
+          <span class="uc-text"><b id="user-name">-</b><i id="user-balance" class="num">$0.00</i></span>
+        </span>
+        <button class="btn ghost btn-sm" id="btn-logout" type="button" hidden>
+          <span class="icon i-power" aria-hidden="true"></span>Log out
+        </button>
+        <button class="theme-toggle" id="theme-toggle" title="Switch dark / light" type="button">
+          <span class="icon i-sun theme-icon-sun" aria-hidden="true"></span>
+          <span class="icon i-moon theme-icon-moon" aria-hidden="true"></span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ==================== AUTH (login first, no purchase without account) ==================== -->
+  <section class="auth-view" id="auth-view" hidden>
+    <div class="container">
+      <div class="auth-grid">
+        <div class="auth-side">
+          <div class="banner-frame">
+            <img class="banner-dark" src="/static/img/banner-dark.png" alt="FF LIKE banner - dark mode">
+            <img class="banner-light" src="/static/img/banner-light.png" alt="FF LIKE banner - light mode">
+          </div>
+          <div class="trust-row">
+            <span class="trust-item"><span class="icon i-bolt" aria-hidden="true"></span>Auto like every day</span>
+            <span class="trust-item"><span class="icon i-shield" aria-hidden="true"></span>Wallet balance system</span>
+            <span class="trust-item"><span class="icon i-coin" aria-hidden="true"></span>Binance Pay deposits</span>
+          </div>
+        </div>
+
+        <div class="card auth-card">
+          <img class="auth-logo" src="/static/img/logo.png" alt="">
+          <span class="eyebrow"><span class="icon i-flame acc" aria-hidden="true"></span>Welcome to FF LIKE</span>
+          <h1 id="auth-title">Log in</h1>
+          <p class="muted">Create your account or log in first. After that you can add
+             wallet credit and start your likes.</p>
+
+          <div class="tabs" id="auth-tabs">
+            <button type="button" id="auth-tab-login" class="active">
+              <span class="icon i-user" aria-hidden="true"></span>Log in
+            </button>
+            <button type="button" id="auth-tab-register">
+              <span class="icon i-plus" aria-hidden="true"></span>Create account
+            </button>
+          </div>
+
+          <form id="form-login" autocomplete="off">
+            <div class="field">
+              <label for="li-user">Username</label>
+              <input type="text" id="li-user" maxlength="20" placeholder="Your username">
+            </div>
+            <div class="field">
+              <label for="li-pass">Password</label>
+              <input type="password" id="li-pass" placeholder="Your password">
+            </div>
+            <button class="btn primary w-100" id="btn-login" type="submit">
+              <span class="icon i-lock" aria-hidden="true"></span>Log in
+            </button>
+          </form>
+
+          <form id="form-register" autocomplete="off" hidden>
+            <div class="field">
+              <label for="rg-user">Username (3-20, letters/numbers/_)</label>
+              <input type="text" id="rg-user" maxlength="20" placeholder="Choose a username">
+            </div>
+            <div class="field">
+              <label for="rg-pass">Password (min 6 characters)</label>
+              <input type="password" id="rg-pass" placeholder="Choose a password">
+            </div>
+            <div class="field">
+              <label for="rg-pass2">Confirm password</label>
+              <input type="password" id="rg-pass2" placeholder="Repeat the password">
+            </div>
+            <button class="btn primary w-100" id="btn-register" type="submit">
+              <span class="icon i-plus" aria-hidden="true"></span>Create my account
+            </button>
+          </form>
+
+          <p class="auth-err" id="auth-err" hidden></p>
+          <p class="dim auth-note">One account per player. Your credit stays in your wallet,
+             coupons add free credit.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <main id="app-view" hidden>
+
+    <!-- ==================== HERO ==================== -->
+    <section class="hero">
+      <div class="container">
+        <div class="banner-frame">
+          <img class="banner-dark" src="/static/img/banner-dark.png" alt="FF LIKE banner - dark mode">
+          <img class="banner-light" src="/static/img/banner-light.png" alt="FF LIKE banner - light mode">
+        </div>
+
+        <div class="hero-grid">
+          <div>
+            <span class="eyebrow"><span class="icon i-flame acc" aria-hidden="true"></span>welcome, <em id="hero-user">player</em></span>
+            <h1>Likes on your profile,<br><em>delivered every day.</em></h1>
+            <p class="lead">
+              Your wallet balance pays the plans: Auto Like for 30, 60 or 120 days,
+              or Like Credit at 1 dollar per 10 days. Add credit with Binance Pay,
+              paste your UID, and the daily likes start.
+            </p>
+            <div class="hero-ctas">
+              <a class="btn primary" href="#wallet">
+                <span class="icon i-coin" aria-hidden="true"></span>Add credit
+              </a>
+              <a class="btn ghost" href="#order">
+                <span class="icon i-bolt" aria-hidden="true"></span>Start an order
+              </a>
+            </div>
+            <div class="trust-row">
+              <span class="trust-item"><span class="icon i-shield" aria-hidden="true"></span>Only your UID needed</span>
+              <span class="trust-item"><span class="icon i-clock" aria-hidden="true"></span>Daily delivery</span>
+              <span class="trust-item"><span class="icon i-tag" aria-hidden="true"></span>Promo codes accepted</span>
+            </div>
+          </div>
+          <div class="hero-stats">
+            <div class="stat-mini">
+              <div class="value num" id="ms-accounts">-</div>
+              <div class="label">Active accounts</div>
+            </div>
+            <div class="stat-mini">
+              <div class="value num" id="ms-likes">-</div>
+              <div class="label">Likes on the way</div>
+            </div>
+            <div class="stat-mini">
+              <div class="value num" id="ms-days">-</div>
+              <div class="label">Days delivered</div>
+            </div>
+            <div class="stat-mini">
+              <div class="value num" id="ms-running">-</div>
+              <div class="label">Days online</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== WALLET ==================== -->
+    <section class="section" id="wallet">
+      <div class="container">
+        <div class="section-head">
+          <span class="eyebrow"><span class="icon i-coin" aria-hidden="true"></span>My wallet</span>
+          <h2>Add credit, buy with balance.</h2>
+          <p>Send USDT with Binance Pay, paste your Transaction ID here, and the credit
+             lands in your wallet. Then every order is paid with one click from your balance.</p>
+        </div>
+
+        <div class="wallet-grid">
+          <div class="card wallet-balance">
+            <span class="eyebrow"><span class="icon i-diamond acc" aria-hidden="true"></span>My balance</span>
+            <div class="balance num" id="wal-balance">$0.00</div>
+            <p class="muted">Use it for Auto Like plans or Like Credit. Coupons add free credit.</p>
+            <div class="field" style="margin-bottom:0;">
+              <label for="coupon-input">Coupon code (free credit)</label>
+              <div class="input-group">
+                <input type="text" id="coupon-input" maxlength="24" placeholder="For example SPRING10">
+                <button class="btn ghost" id="btn-redeem" type="button">
+                  <span class="icon i-tag" aria-hidden="true"></span>Redeem
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="card wallet-deposit">
+            <span class="eyebrow"><span class="icon i-card" aria-hidden="true"></span>Add credit</span>
+            <div class="field">
+              <label>Quick amounts (USDT)</label>
+              <div class="chips" id="dep-chips"></div>
+            </div>
+            <div class="field">
+              <label for="dep-amount">Amount in USD (1 - 500)</label>
+              <input type="number" id="dep-amount" min="1" max="500" placeholder="Or type another amount">
+            </div>
+            <div class="field">
+              <label for="dep-txid">Binance Transaction ID</label>
+              <input type="text" id="dep-txid" maxlength="64" placeholder="Paste the Transaction ID of your transfer">
+            </div>
+            <button class="btn primary w-100" id="btn-deposit" type="button">
+              <span class="icon i-check acc" aria-hidden="true"></span>Confirm my deposit
+            </button>
+            <p class="dim" id="dep-note" style="margin-top:10px; margin-bottom:0;"></p>
+          </div>
+        </div>
+
+        <div class="pay-id-box">
+          <div>
+            <span class="eyebrow" style="color: var(--muted);">Binance Pay ID</span>
+            <div class="id num" id="pay-id">loading</div>
+          </div>
+          <button class="btn primary" id="copy-pay-id" type="button">
+            <span class="icon i-copy" aria-hidden="true"></span>Copy Pay ID
+          </button>
+        </div>
+        <p class="pay-note" id="pay-note"></p>
+        <p class="pay-note muted">
+          Send only USDT to the Pay ID, then paste the Transaction ID in the deposit form.
+          Every transfer is checked; keep your Binance password private.
+        </p>
+
+        <div class="table-wrap" style="margin-top:22px;">
+          <table>
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Deposit</th>
+                <th>Amount</th>
+                <th>Transaction ID</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="dep-tbody">
+              <tr class="empty-row"><td colspan="5">No deposits yet.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== OFFERS ==================== -->
+    <section class="section" id="offers">
+      <div class="container">
+        <div class="section-head">
+          <span class="eyebrow"><span class="icon i-tag" aria-hidden="true"></span>Offers and prices</span>
+          <h2>Pick a plan, pay with balance.</h2>
+          <p>Auto Like is a full subscription. Like Credit works on a simple rate:
+             1 dollar from your wallet gives 10 days of daily likes.</p>
+        </div>
+        <div class="offer-grid" id="offer-grid"></div>
+      </div>
+    </section>
+
+    <!-- ==================== ORDER ==================== -->
+    <section class="section" id="order">
+      <div class="container">
+        <div class="section-head">
+          <span class="eyebrow"><span class="icon i-bolt" aria-hidden="true"></span>Order panel</span>
+          <h2>Start your likes now.</h2>
+          <p>Choose the product, choose the plan, add a promo code if you have one,
+             paste your UID, then confirm. The price is paid from your wallet balance.</p>
+        </div>
+
+        <div class="order-grid">
+          <div class="card">
+            <div class="tabs" id="order-tabs">
+              <button type="button" data-product="like_credit">
+                <span class="icon i-coin" aria-hidden="true"></span>Like Credit
+              </button>
+              <button type="button" data-product="autolike">
+                <span class="icon i-bolt" aria-hidden="true"></span>Auto Like
+              </button>
+            </div>
+
+            <div class="field" id="plan-row"></div>
+
+            <div class="field hidden" id="amount-row">
+              <label for="custom-amount">Custom amount in USD</label>
+              <input type="number" id="custom-amount" min="1" max="200" placeholder="For example 3 -> 30 days">
+            </div>
+
+            <div class="field">
+              <label for="promo-input">Promo code (optional discount)</label>
+              <div class="input-group">
+                <input type="text" id="promo-input" maxlength="24" placeholder="For example WELCOME20">
+                <button class="btn ghost" id="btn-promo" type="button">
+                  <span class="icon i-tag" aria-hidden="true"></span>Apply
+                </button>
+              </div>
+            </div>
+            <p class="promo-note dim" id="promo-note" hidden></p>
+
+            <div class="summary-line">
+              <span class="name" id="sum-name">Select a plan first</span>
+              <span class="price num" id="sum-price">-</span>
+            </div>
+
+            <button class="btn primary w-100" id="btn-order" type="button" disabled>
+              <span class="icon i-check acc" aria-hidden="true"></span>Confirm and pay
+            </button>
+
+            <div class="result" id="order-result"></div>
+          </div>
+
+          <div class="card">
+            <div class="field">
+              <label for="uid-input">Your Free Fire UID</label>
+              <div class="input-group">
+                <input type="text" id="uid-input" class="num" inputmode="numeric" placeholder="For example 10915530931">
+                <button class="btn ghost" id="btn-lookup" type="button">
+                  <span class="icon i-user" aria-hidden="true"></span>Get info
+                </button>
+              </div>
+            </div>
+
+            <div class="player-card hidden" id="player-card">
+              <div class="pc-img">
+                <img id="pc-img-src" alt="Free Fire profile card">
+                <span class="pc-region"><span class="icon i-cal" aria-hidden="true"></span><span id="pc-region">-</span></span>
+              </div>
+              <div class="pc-body">
+                <div class="pc-name" id="pc-name">-</div>
+                <div class="pc-row"><span>Name</span><b id="pc-row-name">-</b></div>
+                <div class="pc-row"><span>UID</span><b id="pc-row-uid" class="num">-</b></div>
+              </div>
+            </div>
+
+            <div class="placeholder-box" id="player-placeholder">
+              <span class="icon i-user" aria-hidden="true"></span>
+              Your player card appears here
+              <span class="dim">Image, name, region - as soon as you look up a UID</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== MY ACTIVITY ==================== -->
+    <section class="section" id="activity">
+      <div class="container">
+        <div class="section-head">
+          <span class="eyebrow"><span class="icon i-list" aria-hidden="true"></span>My activity</span>
+          <h2>Your orders and your autolike runs.</h2>
+          <p>Everything you bought with this account: orders with their status,
+             and the autolike runs with their end date.</p>
+        </div>
+
+        <div class="activity-grid">
+          <div>
+            <h3 class="mini-title"><span class="icon i-list" aria-hidden="true"></span>My orders</h3>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Product</th>
+                    <th>Days</th>
+                    <th>Paid</th>
+                    <th>UID</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody id="my-orders-tbody">
+                  <tr class="empty-row"><td colspan="6">No orders yet.</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div>
+            <h3 class="mini-title"><span class="icon i-bolt" aria-hidden="true"></span>My autolike runs</h3>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>UID</th>
+                    <th>Player</th>
+                    <th>Product</th>
+                    <th>Days</th>
+                    <th>Ends on</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody id="my-accounts-tbody">
+                  <tr class="empty-row"><td colspan="6">No active runs yet.</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== LOGS ==================== -->
+    <section class="section" id="logs">
+      <div class="container">
+        <div class="section-head">
+          <span class="eyebrow"><span class="icon i-list" aria-hidden="true"></span>Live logs</span>
+          <h2>Everything delivered, since day one.</h2>
+          <p>Every account that starts on FF LIKE is logged here: the day it was added,
+             the days delivered and the status. Counts are from the first day of the project.
+             UIDs are partly hidden for privacy.</p>
+        </div>
+
+        <div class="stat-grid">
+          <div class="stat">
+            <span class="top"><span class="icon i-cal" aria-hidden="true"></span>Running since</span>
+            <div class="value num" id="lg-running">-</div>
+            <div class="sub" id="lg-days">- days online</div>
+          </div>
+          <div class="stat">
+            <span class="top"><span class="icon i-user" aria-hidden="true"></span>Accounts</span>
+            <div class="value num" id="lg-accounts">-</div>
+            <div class="sub">total since project start</div>
+          </div>
+          <div class="stat">
+            <span class="top"><span class="icon i-flame acc" aria-hidden="true"></span>Likes planned</span>
+            <div class="value num" id="lg-likes">-</div>
+            <div class="sub">estimated likes delivered</div>
+          </div>
+          <div class="stat">
+            <span class="top"><span class="icon i-clock" aria-hidden="true"></span>Live</span>
+            <div class="value num" id="lg-updated">-</div>
+            <div class="sub">auto refresh every 30s</div>
+          </div>
+        </div>
+
+        <div style="display:flex; justify-content:flex-end; margin-bottom:12px;">
+          <button class="btn btn-sm ghost" id="btn-refresh-logs" type="button">
+            <span class="icon i-refresh" aria-hidden="true"></span>Refresh
+          </button>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Date added</th>
+                <th>UID</th>
+                <th>Player</th>
+                <th>Product</th>
+                <th>Days</th>
+                <th>Ends on</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="logs-tbody">
+              <tr class="empty-row"><td colspan="7">Loading logs...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <div class="container row">
+      <span><b>FF LIKE</b> - Free Fire likes delivered automatically</span>
+      <span>Independent service, not affiliated with Garena or Free Fire.</span>
+    </div>
+  </footer>
+
+  <div id="toast-holder"></div>
+  <script src="/static/js/app.js"></script>
+</body>
+</html>
